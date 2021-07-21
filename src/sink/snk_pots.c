@@ -349,13 +349,14 @@
 
         obj->buffer[0] = 0x00;
 
-        sprintf(obj->buffer,"%s{\n",obj->buffer);
-        sprintf(obj->buffer,"%s    \"timeStamp\": %llu,\n",obj->buffer,obj->in->timeStamp);
-        sprintf(obj->buffer,"%s    \"src\": [\n",obj->buffer);
+        sprintf(obj->buffer, "%s{\n", obj->buffer);
+        sprintf(obj->buffer, "%s    \"type\": \"pots\",\n", obj->buffer);
+        sprintf(obj->buffer, "%s    \"timeStamp\": %llu,\n", obj->buffer, obj->in->timeStamp);
+        sprintf(obj->buffer, "%s    \"src\": [\n", obj->buffer);
 
         for (iPot = 0; iPot < obj->nPots; iPot++) {
 
-            sprintf(obj->buffer,"%s        { \"x\": %1.3f, \"y\": %1.3f, \"z\": %1.3f, \"E\": %1.3f }", obj->buffer, 
+            sprintf(obj->buffer,"%s        { \"x\": %6.3f, \"y\": %6.3f, \"z\": %6.3f, \"E\": %6.3f }", obj->buffer, 
                     obj->in->pots->array[iPot*4+0], obj->in->pots->array[iPot*4+1], obj->in->pots->array[iPot*4+2], obj->in->pots->array[iPot*4+3]);
 
             if (iPot != (obj->nPots - 1)) {

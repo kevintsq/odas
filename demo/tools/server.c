@@ -1,107 +1,59 @@
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    #include <arpa/inet.h>
-    #include <signal.h>
-    #include <getopt.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
-    int main(int argc, char* argv[])
-    {
+#define PORT 9000
+#define MAX_BUFFER_SIZE 1024
 
-        char verbose = 0x00;
+int main(int argc, char *argv[]) {
+    struct sockaddr_in socket_address;
+    socklen_t socket_address_size = sizeof(socket_address);
+    int server_fd, client_fd, option = 1, message_len;
+    char buffer[MAX_BUFFER_SIZE] = {0};
 
-        int server_id;
-        struct sockaddr_in server_address;
-        int connection_id;
-        char * message;
-        int messageSize;
-
-        int c;
-        unsigned int portNumber;
-        char * fileName;
-        FILE * fp;
-
-        const unsigned int nBytes = 10240;
-
-        while ((c = getopt(argc,argv, "p:o:hv")) != -1) {
-
-            switch(c) {
-
-                case 'h':
-
-                    printf("+----------------------------------------------------+\n");
-                    printf("|        ODAS (Open embeddeD Audition System)        |\n");
-                    printf("+----------------------------------------------------+\n");
-                    printf("| Author:      Francois Grondin                      |\n");
-                    printf("| Email:       francois.grondin2@usherbrooke.ca      |\n");
-                    printf("| Website:     introlab.3it.usherbrooke.ca           |\n");
-                    printf("| Repository:  github.com/introlab/odas              |\n");
-                    printf("| Version:     1.0                                   |\n");
-                    printf("+----------------------------------------------------+\n");        
-                    printf("| -h       Help                                      |\n");
-                    printf("| -o       Output file                               |\n");
-                    printf("| -p       Port number                               |\n");
-                    printf("| -v       Verbose                                   |\n");
-                    printf("+----------------------------------------------------+\n");
-
-                    exit(EXIT_SUCCESS);                     
-
-                case 'o':
-
-                    fileName = (char *) malloc(sizeof(char) * (strlen(optarg)+1));
-                    strcpy(fileName, optarg);   
-
-                break;
-
-                case 'p':
-
-                    portNumber = atoi(optarg);
-
-                break;
-
-
-            }
-
-        }
-
-        server_id = socket(AF_INET, SOCK_STREAM, 0);
-
-        server_address.sin_family = AF_INET;
-        server_address.sin_addr.s_addr = htonl(INADDR_ANY);
-        server_address.sin_port = htons(portNumber);
-
-        printf("Opening file............. "); fflush(stdout);
-        fp = fopen(fileName, "wb");
-        printf("[OK]\n");
-
-        printf("Binding socket........... ");  fflush(stdout);
-        bind(server_id, (struct sockaddr *) &server_address, sizeof(server_address));
-        printf("[OK]\n");
-
-        printf("Listening socket......... ");  fflush(stdout);
-        listen(server_id, 1);
-        printf("[OK]\n");
-
-        printf("Waiting for connection... "); fflush(stdout);
-        connection_id = accept(server_id, (struct sockaddr*) NULL, NULL);
-        printf("[OK]\n");
-
-        message = (char *) malloc(sizeof(char) * nBytes);
-
-        printf("Receiving data........... "); fflush(stdout);
-        while( (messageSize = recv(connection_id, message, nBytes, 0)) > 0) {
-
-            message[messageSize] = 0x00;
-
-            fwrite(message, messageSize, sizeof(char), fp);
-
-        }
-        printf("[OK]\n");
-
-        printf("Closing file............. "); fflush(stdout);
-        fclose(fp);
-        printf("[OK]\n");
-
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("socket");
+        exit(EXIT_FAILURE);
     }
+
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &option, sizeof(option))) {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+    }
+
+    socket_address.sin_family = AF_INET;
+    socket_address.sin_addr.s_addr = htonl(INADDR_ANY);
+    socket_address.sin_port = htons(PORT);
+
+    if (bind(server_fd, (struct sockaddr *) &socket_address, socket_address_size) < 0) {
+        perror("bind");
+        exit(EXIT_FAILURE);
+    }
+
+    if (listen(server_fd, 1) < 0) {
+        perror("listen");
+        exit(EXIT_FAILURE);
+    }
+
+    if ((client_fd = accept(server_fd, (struct sockaddr *) &socket_address, &socket_address_size)) < 0) {
+        perror("accept");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 11111; send(client_fd, buffer, strlen(buffer), 0) >= 0 && i >= 0; i--) {
+        printf("%d\n", i);
+        sprintf(buffer, "%d", i);
+    }
+    
+    while ((message_len = recv(client_fd, buffer, MAX_BUFFER_SIZE, 0)) > 0) {
+        buffer[message_len] = '\0';
+        puts(buffer);
+    }
+
+    close(client_fd);
+    close(server_fd);
+    return EXIT_SUCCESS;
+}

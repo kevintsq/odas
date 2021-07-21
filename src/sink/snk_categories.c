@@ -333,9 +333,10 @@
 
         obj->buffer[0] = 0x00;
 
-        sprintf(obj->buffer,"%s{\n",obj->buffer);
-        sprintf(obj->buffer,"%s    \"timeStamp\": %llu,\n",obj->buffer,obj->in->timeStamp);
-        sprintf(obj->buffer,"%s    \"src\": [\n",obj->buffer);
+        sprintf(obj->buffer, "%s{\n", obj->buffer);
+        sprintf(obj->buffer, "%s    \"type\": \"categories\",\n", obj->buffer);
+        sprintf(obj->buffer, "%s    \"timeStamp\": %llu,\n", obj->buffer, obj->in->timeStamp);
+        sprintf(obj->buffer, "%s    \"src\": [\n", obj->buffer);
 
         for (iChannel = 0; iChannel < obj->nChannels; iChannel++) {
 

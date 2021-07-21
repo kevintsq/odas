@@ -338,13 +338,14 @@
 
         obj->buffer[0] = 0x00;
 
-        sprintf(obj->buffer,"%s{\n",obj->buffer);
-        sprintf(obj->buffer,"%s    \"timeStamp\": %llu,\n",obj->buffer,obj->in->timeStamp);
-        sprintf(obj->buffer,"%s    \"src\": [\n",obj->buffer);
+        sprintf(obj->buffer, "%s{\n", obj->buffer);
+        sprintf(obj->buffer, "%s    \"type\": \"tracks\",\n", obj->buffer);
+        sprintf(obj->buffer, "%s    \"timeStamp\": %llu,\n", obj->buffer, obj->in->timeStamp);
+        sprintf(obj->buffer, "%s    \"src\": [\n", obj->buffer);
 
         for (iTrack = 0; iTrack < obj->nTracks; iTrack++) {
 
-            sprintf(obj->buffer,"%s        { \"id\": %llu, \"tag\": \"%s\", \"x\": %1.3f, \"y\": %1.3f, \"z\": %1.3f, \"activity\": %1.3f }", 
+            sprintf(obj->buffer,"%s        { \"id\": %llu, \"tag\": \"%s\", \"x\": %6.3f, \"y\": %6.3f, \"z\": %6.3f, \"activity\": %6.3f }", 
                     obj->buffer,
                     obj->in->tracks->ids[iTrack],
                     obj->in->tracks->tags[iTrack],
