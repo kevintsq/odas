@@ -6,7 +6,7 @@ if IPC_TYPE == "SOCKET":
     HOST = ''
     PORT = 9000
     CONNECTIONS = 2
-    TRUNK_SIZE = 10240
+    TRUNK_SIZE = 1024
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR | socket.SO_REUSEPORT, 1)
         s.bind((HOST, PORT))

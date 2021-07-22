@@ -10,12 +10,14 @@ if IPC_TYPE == "SOCKET":
     
     def handle_request(connection):
         with connection:
+            count = 0
             while True:
-                data = connection.recv(TRUNK_SIZE).decode('ascii')
-                if not data:
+                state = connection.send(f'{count}\r\n'.encode('utf-8'))
+                if not state:
                     print(f"Connection closed from {address}.")
-                    return
-                print(data)
+                    break
+                print(count)
+                count += 1
     
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR | socket.SO_REUSEPORT, 1)

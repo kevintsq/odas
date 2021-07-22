@@ -4,11 +4,11 @@ if IPC_TYPE == "SOCKET":
 
     HOST = '127.0.0.1'
     PORT = 9000
-    TRUNK_SIZE = 10240
+    TRUNK_SIZE = 1024
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         while True:
-            data = s.recv(TRUNK_SIZE).decode('ascii')
+            data = s.recv(TRUNK_SIZE).decode('utf-8')
             if not data:
                 print("Connection closed.")
                 break
