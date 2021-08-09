@@ -370,7 +370,7 @@
         }
         
         sprintf(obj->buffer,"%s    ]\n",obj->buffer);
-        sprintf(obj->buffer,"%s}\n",obj->buffer);        
+        sprintf(obj->buffer,"%s}\r\n",obj->buffer);        
 
         obj->bufferSize = strlen(obj->buffer);
 
